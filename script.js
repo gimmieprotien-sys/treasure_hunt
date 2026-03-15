@@ -1,29 +1,4 @@
-// ============================================================
-//  script.js — Campus Treasure Hunt
-//  ──────────────────────────────────────────────────────────
-//  BEGINNER'S GUIDE TO THIS FILE:
-//
-//  Section 1  → CONFIGURATION  (edit clues & Google Script URL here)
-//  Section 2  → GAME STATE     (variables that track progress)
-//  Section 3  → TIMER          (start / stop / format)
-//  Section 4  → SCREEN HELPERS (show/hide screens)
-//  Section 5  → START HUNT     (runs when "Start Hunt" is clicked)
-//  Section 6  → SUBMIT PASSCODE(checks the code the team enters)
-//  Section 7  → SCORING        (calculates penalty and final score)
-//  Section 8  → GOOGLE SHEETS  (sends result data)
-//  Section 9  → BACKGROUND FX  (animated star canvas)
-// ============================================================
 
-
-// ════════════════════════════════════════════════════════════
-//  SECTION 1 — CONFIGURATION
-//  ✏️  Edit THIS section to customise the game.
-// ════════════════════════════════════════════════════════════
-
-// ── Google Apps Script URL ──────────────────────────────────
-//  1. Go to script.google.com and create a new project.
-//  2. Paste the "doPost" Apps Script code (see README at bottom).
-//  3. Deploy as a Web App → copy the URL → replace the string below.
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzvekiQyTgNrjgpgd_rOcXR0ABmmnkTMqSNXueAl8Wa0po1WubIfGmcFx4QSa_rC8wd/exec";
 
 
@@ -408,47 +383,3 @@ function setSubmitStatus(state, message) {
   draw();
 })();
 
-
-// ════════════════════════════════════════════════════════════
-//  README / SETUP INSTRUCTIONS
-//  ──────────────────────────────────────────────────────────
-//
-//  HOW TO HOST ON GITHUB PAGES
-//  ─────────────────────────────
-//  1. Go to github.com and create a free account (if you don't have one).
-//  2. Click "New repository". Name it anything, e.g. "treasure-hunt".
-//  3. Upload your three files: index.html, styles.css, script.js
-//     (drag-and-drop them into the repository file list).
-//  4. Go to Settings → Pages.
-//  5. Under "Source", select "main" branch → Save.
-//  6. GitHub will give you a URL like:
-//     https://yourusername.github.io/treasure-hunt/
-//  7. That's your QR code URL! Use any QR code generator
-//     (e.g. qr-code-generator.com) to turn it into a QR code.
-//  8. Print and place the QR code at the starting location.
-//
-//
-//  WHERE TO INSERT THE GOOGLE APPS SCRIPT URL
-//  ─────────────────────────────────────────────
-//  Find this line near the top of script.js:
-//
-//    const SCRIPT_URL = "PASTE_YOUR_GOOGLE_SCRIPT_URL_HERE";
-//
-//  Replace the placeholder with the URL you copied after deploying
-//  your Apps Script (see Section 9 for full instructions).
-//
-//
-//  HOW TO EDIT CLUES AND PASSCODES
-//  ─────────────────────────────────
-//  Find the `clues` array near the top of script.js.
-//  Each clue looks like this:
-//
-//    { clue: "...", code: "LIB247" }
-//
-//  • Edit the clue text between the first pair of quotes.
-//  • Edit the passcode between the second pair of quotes.
-//  • Passcodes are NOT case-sensitive (LIB247 = lib247 = Lib247).
-//  • Add more clues by adding more lines inside the array.
-//  • Make sure each line (except the last) ends with a comma.
-//
-// ════════════════════════════════════════════════════════════
