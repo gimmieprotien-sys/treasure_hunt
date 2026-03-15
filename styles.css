@@ -1,0 +1,429 @@
+/* ============================================================
+   styles.css — Campus Treasure Hunt
+   Aesthetic: Dark adventure map / nautical / old-gold
+   Fonts: Pirata One (display) + Outfit (UI text)
+   ============================================================ */
+
+/* ── CSS Variables — edit colours here ── */
+:root {
+  --bg:          #0d1117;
+  --surface:     #161c26;
+  --surface-2:   #1e2736;
+  --border:      rgba(255,255,255,0.07);
+  --gold:        #e8a020;
+  --gold-light:  #ffd166;
+  --gold-glow:   rgba(232,160,32,0.22);
+  --teal:        #2dd4bf;
+  --red:         #f87171;
+  --text:        #e8e0d0;
+  --text-muted:  #7a8496;
+
+  --font-display: 'Pirata One', cursive;
+  --font-ui:      'Outfit', sans-serif;
+
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
+  --shadow-gold: 0 0 30px rgba(232,160,32,0.18);
+}
+
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: var(--font-ui);
+  background: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
+}
+
+/* ── Background canvas (star particles) ── */
+#bg-canvas {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+
+/* ── Screen management ── */
+/* All screens are hidden by default; .active makes them visible */
+.screen {
+  display: none;
+  position: relative;
+  z-index: 1;
+  min-height: 100dvh;
+  padding: 24px 16px 40px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+}
+.screen.active {
+  display: flex;
+}
+
+/* ============================================================
+   SCREEN 1 — Start
+   ============================================================ */
+.start-card {
+  width: 100%;
+  max-width: 400px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 40px 28px 36px;
+  text-align: center;
+  box-shadow: var(--shadow-gold), 0 32px 64px rgba(0,0,0,0.5);
+  animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+/* Animated compass emoji */
+.compass {
+  font-size: 52px;
+  display: block;
+  margin-bottom: 16px;
+  animation: spin 12s linear infinite;
+  transform-origin: center;
+}
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.main-title {
+  font-family: var(--font-display);
+  font-size: clamp(46px, 14vw, 64px);
+  line-height: 0.92;
+  letter-spacing: 0.03em;
+  color: var(--gold);
+  text-shadow: 0 0 40px var(--gold-glow);
+  margin-bottom: 10px;
+}
+
+.subtitle {
+  font-size: 13px;
+  color: var(--text-muted);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 32px;
+}
+
+/* ── Shared field styles ── */
+.field-group {
+  text-align: left;
+  margin-bottom: 20px;
+}
+
+.field-label {
+  display: block;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--gold);
+  margin-bottom: 8px;
+}
+
+.text-input {
+  width: 100%;
+  background: var(--bg);
+  border: 1.5px solid rgba(232,160,32,0.25);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  font-family: var(--font-ui);
+  font-size: 15px;
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  letter-spacing: 0.04em;
+}
+.text-input::placeholder { color: var(--text-muted); }
+.text-input:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px var(--gold-glow);
+}
+.text-input:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── Primary CTA button ── */
+.btn-primary {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  background: var(--gold);
+  color: #0d1117;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 16px 24px;
+  font-family: var(--font-ui);
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
+  box-shadow: 0 4px 24px rgba(232,160,32,0.3);
+}
+.btn-primary:hover  { background: var(--gold-light); box-shadow: 0 6px 32px rgba(232,160,32,0.45); }
+.btn-primary:active { transform: scale(0.97); }
+
+/* Inline error text */
+.inline-error {
+  margin-top: 12px;
+  font-size: 13px;
+  color: var(--red);
+  text-align: center;
+}
+.hidden { display: none !important; }
+
+
+/* ============================================================
+   SCREEN 2 — Active Hunt
+   ============================================================ */
+#screen-hunt {
+  gap: 20px;
+}
+
+/* ── Top bar ── */
+.hunt-topbar {
+  width: 100%;
+  max-width: 480px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  padding: 12px 18px;
+}
+
+.topbar-team {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+.topbar-label {
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--text-muted);
+}
+.topbar-value {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text);
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ── Timer ── */
+.topbar-timer {
+  font-family: 'Courier New', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+  text-shadow: 0 0 18px rgba(45,212,191,0.4);
+  /* Subtle pulse animation so the timer feels alive */
+  animation: timerPulse 1s ease-in-out infinite;
+}
+@keyframes timerPulse {
+  0%,100% { opacity: 1; }
+  50%      { opacity: 0.75; }
+}
+
+/* ── Clue card ── */
+.clue-card {
+  width: 100%;
+  max-width: 480px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--gold);
+  border-radius: var(--radius-md);
+  padding: 24px 22px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Crosshatch texture overlay */
+.clue-card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background-image:
+    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px),
+    repeating-linear-gradient(-45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px);
+  pointer-events: none;
+}
+
+.clue-card__tag {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--gold);
+  margin-bottom: 14px;
+}
+
+.clue-card__text {
+  font-size: 16px;
+  line-height: 1.7;
+  color: var(--text);
+  font-weight: 400;
+}
+
+/* ── Passcode section ── */
+.passcode-section {
+  width: 100%;
+  max-width: 480px;
+}
+
+.passcode-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 8px;
+}
+
+.passcode-input {
+  flex: 1;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  font-size: 16px;
+}
+
+.btn-submit {
+  background: var(--gold);
+  color: #0d1117;
+  border: none;
+  border-radius: var(--radius-sm);
+  padding: 14px 20px;
+  font-family: var(--font-ui);
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.12s;
+  white-space: nowrap;
+  box-shadow: 0 4px 16px rgba(232,160,32,0.25);
+}
+.btn-submit:hover  { background: var(--gold-light); }
+.btn-submit:active { transform: scale(0.96); }
+.btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+
+
+/* ============================================================
+   SCREEN 3 — Result
+   ============================================================ */
+.result-card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 36px 28px 32px;
+  text-align: center;
+  box-shadow: var(--shadow-gold), 0 32px 64px rgba(0,0,0,0.5);
+  animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+}
+
+.result-icon {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 14px;
+  animation: bounce 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+}
+@keyframes bounce {
+  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
+  70%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); }
+}
+
+.result-title {
+  font-family: var(--font-display);
+  font-size: 36px;
+  color: var(--gold);
+  letter-spacing: 0.04em;
+  margin-bottom: 4px;
+}
+
+.result-team {
+  font-size: 14px;
+  color: var(--text-muted);
+  margin-bottom: 28px;
+  letter-spacing: 0.06em;
+}
+
+/* Score breakdown grid */
+.result-grid {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.result-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+.result-row:last-child { border-bottom: none; }
+
+.result-label { color: var(--text-muted); font-weight: 400; }
+.result-val   { font-weight: 600; color: var(--text); }
+
+/* Penalty row highlight */
+.result-row.penalty .result-val { color: var(--red); }
+
+/* Final score row highlight */
+.result-row.final {
+  background: var(--gold-glow);
+}
+.result-row.final .result-label { color: var(--gold-light); font-weight: 700; }
+.result-row.final .result-val   { color: var(--gold-light); font-size: 20px; font-weight: 700; }
+
+/* Submission status pill */
+.submit-status {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 99px;
+  padding: 8px 16px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* Animated dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--teal);
+  animation: dotPulse 1.2s ease-in-out infinite;
+}
+@keyframes dotPulse {
+  0%,100% { opacity: 1; transform: scale(1); }
+  50%      { opacity: 0.4; transform: scale(0.7); }
+}
+/* Stop pulsing once done */
+.status-dot.done    { background: var(--teal); animation: none; }
+.status-dot.failed  { background: var(--red);  animation: none; }
+
+
+/* ── Shared fade-up entrance ── */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(36px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Responsive ── */
+@media (max-width: 360px) {
+  .start-card, .result-card { padding: 28px 18px 28px; }
+  .passcode-row { flex-direction: column; }
+  .btn-submit   { width: 100%; padding: 14px; }
+}

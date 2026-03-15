@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <!-- Essential for correct scaling on mobile phones -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Campus Treasure Hunt</title>
+
+  <!-- Fonts: Pirata One (pirate/adventure display) + Outfit (clean body) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet" />
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Animated background particles (filled by JS) -->
+  <canvas id="bg-canvas"></canvas>
+
+  <!-- ════════════════════════════════════════
+       SCREEN 1 — Team name entry
+  ═════════════════════════════════════════ -->
+  <div class="screen active" id="screen-start">
+
+    <div class="start-card">
+      <!-- Decorative compass icon -->
+      <div class="compass" aria-hidden="true">🧭</div>
+
+      <h1 class="main-title">Campus<br>Treasure Hunt</h1>
+      <p class="subtitle">One QR. One clue. One winner.</p>
+
+      <div class="field-group">
+        <label for="team-name" class="field-label">TEAM NAME</label>
+        <input
+          type="text"
+          id="team-name"
+          class="text-input"
+          placeholder="e.g. The Map Hackers"
+          maxlength="40"
+          autocomplete="off"
+        />
+      </div>
+
+      <button class="btn-primary" id="start-btn" onclick="startHunt()">
+        <span>Start Hunt</span>
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      </button>
+
+      <!-- Error shown if team name is empty -->
+      <p class="inline-error hidden" id="start-error">Please enter your team name first!</p>
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       SCREEN 2 — Active hunt
+  ═════════════════════════════════════════ -->
+  <div class="screen" id="screen-hunt">
+
+    <!-- Top bar: team name + timer -->
+    <div class="hunt-topbar">
+      <div class="topbar-team">
+        <span class="topbar-label">TEAM</span>
+        <span class="topbar-value" id="display-team">—</span>
+      </div>
+      <div class="topbar-timer" id="timer-display">00:00</div>
+    </div>
+
+    <!-- Clue card -->
+    <div class="clue-card">
+      <div class="clue-card__tag">YOUR CLUE</div>
+      <p class="clue-card__text" id="clue-text">Loading…</p>
+    </div>
+
+    <!-- Passcode entry -->
+    <div class="passcode-section">
+      <label for="passcode-input" class="field-label">ENTER PASSCODE</label>
+      <div class="passcode-row">
+        <input
+          type="text"
+          id="passcode-input"
+          class="text-input passcode-input"
+          placeholder="Found it? Type the code"
+          maxlength="20"
+          autocomplete="off"
+          autocapitalize="characters"
+        />
+        <button class="btn-submit" id="submit-btn" onclick="submitPasscode()">
+          Submit
+        </button>
+      </div>
+
+      <!-- Wrong passcode feedback -->
+      <p class="inline-error hidden" id="passcode-error">❌ Wrong passcode. Keep searching!</p>
+    </div>
+
+  </div>
+
+
+  <!-- ════════════════════════════════════════
+       SCREEN 3 — Result
+  ═════════════════════════════════════════ -->
+  <div class="screen" id="screen-result">
+
+    <div class="result-card">
+      <div class="result-icon" id="result-icon">🏆</div>
+      <h2 class="result-title">Hunt Complete!</h2>
+      <p class="result-team" id="result-team-name"></p>
+
+      <!-- Score breakdown rows -->
+      <div class="result-grid">
+        <div class="result-row">
+          <span class="result-label">Time Taken</span>
+          <span class="result-val" id="result-time">—</span>
+        </div>
+        <div class="result-row">
+          <span class="result-label">Base Score</span>
+          <span class="result-val">20 pts</span>
+        </div>
+        <div class="result-row penalty">
+          <span class="result-label">Penalty</span>
+          <span class="result-val" id="result-penalty">—</span>
+        </div>
+        <div class="result-row final">
+          <span class="result-label">Final Score</span>
+          <span class="result-val" id="result-score">—</span>
+        </div>
+      </div>
+
+      <!-- Submission status -->
+      <div class="submit-status" id="submit-status">
+        <span class="status-dot"></span>
+        <span id="submit-status-text">Submitting to leaderboard…</span>
+      </div>
+    </div>
+
+  </div>
+
+
+  <!-- Main game logic -->
+  <script src="script.js"></script>
+</body>
+</html>
