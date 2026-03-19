@@ -1,44 +1,54 @@
-/* ============================================================
-   styles.css — Campus Treasure Hunt
-   Aesthetic: Dark adventure map / nautical / old-gold
-   Fonts: Pirata One (display) + Outfit (UI text)
-   ============================================================ */
 
-/* ── CSS Variables — edit colours here ── */
 :root {
-  --bg:          #0d1117;
-  --surface:     #161c26;
-  --surface-2:   #1e2736;
-  --border:      rgba(255,255,255,0.07);
-  --gold:        #e8a020;
-  --gold-light:  #ffd166;
-  --gold-glow:   rgba(232,160,32,0.22);
-  --teal:        #2dd4bf;
-  --red:         #f87171;
-  --text:        #e8e0d0;
-  --text-muted:  #7a8496;
+  /* Galaxy colour palette */
+  --space:        #050a1a;
+  --nebula-blue:  #0f1f4a;
+  --nebula-purple:#1a0a3a;
+  --surface:      rgba(10, 20, 60, 0.82);
+  --surface-solid:#0d1840;
+  --border:       rgba(120, 160, 255, 0.18);
+  --cyan:         #00e5ff;
+  --purple:       #c084fc;
+  --pink:         #f472b6;
+  --yellow:       #fde047;
+  --green:        #4ade80;
+  --red:          #f87171;
+  --white:        #e8eeff;
+  --muted:        #6b7eb8;
 
-  --font-display: 'Pirata One', cursive;
-  --font-ui:      'Outfit', sans-serif;
+  /* UFO colours */
+  --ufo-body:     #c0c8e0;
+  --ufo-dome:     #a0e8ff;
+  --ufo-glow:     rgba(0,229,255,0.35);
 
-  --radius-sm: 10px;
-  --radius-md: 16px;
-  --radius-lg: 24px;
-  --shadow-gold: 0 0 30px rgba(232,160,32,0.18);
+  /* Rocket colours */
+  --rocket-body:  #e2e8f0;
+  --rocket-red:   #ef4444;
+  --rocket-flame: #fb923c;
+
+  --font-display: 'Boogaloo', cursive;
+  --font-ui:      'Nunito', sans-serif;
+
+  --radius-sm: 14px;
+  --radius-md: 20px;
+  --radius-lg: 28px;
 }
 
 /* ── Reset ── */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
 html, body {
-  height: 100%;
+  min-height: 100%;
   font-family: var(--font-ui);
-  background: var(--bg);
-  color: var(--text);
+  background: var(--space);
+  color: var(--white);
   overflow-x: hidden;
 }
 
-/* ── Background canvas (star particles) ── */
+/* ══════════════════════════════════════════════════════════
+   GALAXY BACKGROUND CANVAS
+   (stars + nebula clouds painted by script.js)
+══════════════════════════════════════════════════════════ */
 #bg-canvas {
   position: fixed;
   inset: 0;
@@ -46,237 +56,526 @@ html, body {
   pointer-events: none;
 }
 
-/* ── Screen management ── */
-/* All screens are hidden by default; .active makes them visible */
+/* ══════════════════════════════════════════════════════════
+   SPACE OBJECTS LAYER
+   All floating decorations sit here, above the canvas
+══════════════════════════════════════════════════════════ */
+.space-objects {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  overflow: hidden;
+}
+
+/* ──────────────────── UFO ──────────────────── */
+.ufo {
+  position: absolute;
+}
+
+/* UFO 1 — big, floats from left edge, bobs gently */
+.ufo-1 {
+  top: 12%;
+  left: -80px;
+  animation: ufo1Drift 18s ease-in-out infinite;
+}
+
+/* UFO 2 — small, right side */
+.ufo-2 {
+  bottom: 28%;
+  right: -50px;
+  transform: scaleX(-1);
+  animation: ufo2Drift 14s ease-in-out infinite 3s;
+}
+
+@keyframes ufo1Drift {
+  0%,100% { transform: translate(0px,  0px)   rotate(-3deg); }
+  25%      { transform: translate(55px,-20px)  rotate( 2deg); }
+  50%      { transform: translate(30px,-10px)  rotate(-1deg); }
+  75%      { transform: translate(60px, 10px)  rotate( 3deg); }
+}
+@keyframes ufo2Drift {
+  0%,100% { transform: scaleX(-1) translate(0px,   0px)  rotate(2deg); }
+  30%      { transform: scaleX(-1) translate(-50px,-15px) rotate(-3deg); }
+  60%      { transform: scaleX(-1) translate(-30px, 10px) rotate(1deg); }
+}
+
+/* UFO tractor beam */
+.ufo__beam {
+  position: absolute;
+  bottom: -38px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 0;
+  border-left:  22px solid transparent;
+  border-right: 22px solid transparent;
+  border-top:   38px solid rgba(0,229,255,0.20);
+  filter: blur(3px);
+  animation: beamPulse 2s ease-in-out infinite;
+}
+@keyframes beamPulse {
+  0%,100% { opacity: 0.6; }
+  50%      { opacity: 1; }
+}
+
+.ufo__body { position: relative; }
+
+/* Dome (glass bubble on top) */
+.ufo__dome {
+  width: 40px;
+  height: 22px;
+  background: radial-gradient(ellipse at 35% 30%, #e0f8ff, var(--ufo-dome) 60%, #60c8e8);
+  border-radius: 50% 50% 0 0;
+  margin: 0 auto;
+  position: relative;
+  box-shadow: 0 0 12px var(--ufo-glow);
+}
+
+/* Main saucer disc */
+.ufo__disc {
+  width: 80px;
+  height: 22px;
+  background: radial-gradient(ellipse at 50% 30%, #d8e0f0, var(--ufo-body) 70%, #8898b8);
+  border-radius: 50%;
+  margin-top: -2px;
+  position: relative;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.5), 0 0 20px var(--ufo-glow);
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+  padding: 0 8px;
+}
+
+/* Blinking lights on the disc */
+.ufo__light {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.ufo-1 .ufo__light:nth-child(1) { background: var(--yellow);  animation: blink 1.1s 0.0s infinite; }
+.ufo-1 .ufo__light:nth-child(2) { background: var(--cyan);    animation: blink 1.1s 0.3s infinite; }
+.ufo-1 .ufo__light:nth-child(3) { background: var(--pink);    animation: blink 1.1s 0.6s infinite; }
+.ufo-1 .ufo__light:nth-child(4) { background: var(--green);   animation: blink 1.1s 0.9s infinite; }
+.ufo-2 .ufo__light:nth-child(1) { background: var(--purple);  animation: blink 1.4s 0.0s infinite; }
+.ufo-2 .ufo__light:nth-child(2) { background: var(--yellow);  animation: blink 1.4s 0.5s infinite; }
+.ufo-2 .ufo__light:nth-child(3) { background: var(--cyan);    animation: blink 1.4s 1.0s infinite; }
+
+@keyframes blink {
+  0%,45%,55%,100% { opacity: 1; transform: scale(1); }
+  50%              { opacity: 0.1; transform: scale(0.6); }
+}
+
+/* ──────────────────── ROCKET ──────────────────── */
+.rocket {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Rocket 1 — large, tilted 10° right, travels up left */
+.rocket-1 {
+  left: 6%;
+  bottom: -160px;
+  transform: rotate(10deg);
+  animation: rocketFly1 20s linear infinite;
+}
+/* Rocket 2 — small, tilted -15°, right side */
+.rocket-2 {
+  right: 8%;
+  bottom: -120px;
+  transform: rotate(-15deg);
+  animation: rocketFly2 15s linear infinite 6s;
+  scale: 0.7;
+}
+
+@keyframes rocketFly1 {
+  0%   { bottom: -160px; opacity: 0; }
+  5%   { opacity: 1; }
+  90%  { opacity: 1; }
+  100% { bottom: 110%; opacity: 0; }
+}
+@keyframes rocketFly2 {
+  0%   { bottom: -120px; opacity: 0; }
+  8%   { opacity: 1; }
+  88%  { opacity: 1; }
+  100% { bottom: 110%; opacity: 0; }
+}
+
+/* Rocket nose cone */
+.rocket__nose {
+  width: 0;
+  height: 0;
+  border-left:  14px solid transparent;
+  border-right: 14px solid transparent;
+  border-bottom: 28px solid var(--rocket-red);
+}
+
+/* Rocket body cylinder */
+.rocket__body {
+  width: 28px;
+  height: 52px;
+  background: linear-gradient(160deg, #f1f5f9 30%, #cbd5e1);
+  border-radius: 2px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.4);
+}
+
+/* Porthole window */
+.rocket__window {
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 35%, #bfdbfe, #1e40af);
+  border: 2px solid #93c5fd;
+  box-shadow: 0 0 6px #60a5fa;
+}
+
+/* Fins */
+.rocket__fins { display: flex; gap: 28px; margin-top: -4px; }
+.fin {
+  width: 0; height: 0;
+  border-top: 14px solid transparent;
+}
+.fin-l {
+  border-right: 14px solid var(--rocket-red);
+}
+.fin-r {
+  border-left:  14px solid var(--rocket-red);
+}
+
+/* Flame exhaust */
+.rocket__flame {
+  display: flex;
+  gap: 3px;
+  margin-top: -2px;
+}
+.flame {
+  border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+  animation: flameDance 0.15s ease-in-out infinite alternate;
+}
+.f1 { width: 10px; height: 22px; background: linear-gradient(to bottom, #fde047, #fb923c); animation-delay: 0.00s; }
+.f2 { width:  8px; height: 30px; background: linear-gradient(to bottom, #fb923c, #ef4444); animation-delay: 0.05s; }
+.f3 { width: 10px; height: 18px; background: linear-gradient(to bottom, #fde047, #fb923c); animation-delay: 0.10s; }
+
+@keyframes flameDance {
+  from { transform: scaleY(1)   scaleX(1);   opacity: 0.9; }
+  to   { transform: scaleY(1.3) scaleX(0.85); opacity: 1;   }
+}
+
+/* ──────────────────── CSS STARS (sparkle) ──────────────────── */
+.css-star {
+  position: absolute;
+  font-style: normal;
+  animation: starShine 3s ease-in-out infinite;
+  color: var(--yellow);
+  filter: drop-shadow(0 0 6px var(--yellow));
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Position each star around the screen */
+.s1  { top: 8%;  left: 18%;  font-size: 18px; animation-duration: 2.1s; animation-delay: 0.0s; }
+.s2  { top: 15%; right: 22%; font-size: 24px; animation-duration: 2.8s; animation-delay: 0.4s; color: var(--purple); filter: drop-shadow(0 0 6px var(--purple)); }
+.s3  { top: 35%; left: 5%;   font-size: 14px; animation-duration: 1.9s; animation-delay: 0.8s; }
+.s4  { top: 55%; right: 6%;  font-size: 20px; animation-duration: 2.4s; animation-delay: 1.2s; color: var(--cyan); filter: drop-shadow(0 0 6px var(--cyan)); }
+.s5  { top: 72%; left: 12%;  font-size: 16px; animation-duration: 3.1s; animation-delay: 0.3s; color: var(--white); filter: drop-shadow(0 0 4px white); }
+.s6  { top: 85%; right: 18%; font-size: 22px; animation-duration: 2.6s; animation-delay: 0.7s; }
+.s7  { top: 22%; left: 42%;  font-size: 12px; animation-duration: 1.7s; animation-delay: 1.0s; color: var(--pink); filter: drop-shadow(0 0 5px var(--pink)); }
+.s8  { top: 65%; left: 55%;  font-size: 18px; animation-duration: 2.2s; animation-delay: 0.5s; }
+.s9  { top: 45%; right: 38%; font-size: 14px; animation-duration: 3.3s; animation-delay: 1.4s; color: var(--cyan); filter: drop-shadow(0 0 6px var(--cyan)); }
+.s10 { top: 90%; left: 40%;  font-size: 10px; animation-duration: 2.0s; animation-delay: 0.2s; color: var(--white); filter: drop-shadow(0 0 3px white); }
+
+@keyframes starShine {
+  0%,100% { opacity: 0.15; transform: scale(0.7) rotate(0deg);   }
+  50%      { opacity: 1;    transform: scale(1.3) rotate(20deg);  }
+}
+
+/* ──────────────────── PLANETS ──────────────────── */
+.planet {
+  position: absolute;
+  border-radius: 50%;
+  pointer-events: none;
+}
+
+/* Large ringed planet — top right */
+.p1 {
+  width: 70px;
+  height: 70px;
+  background: radial-gradient(circle at 38% 38%, #c084fc, #7c3aed 60%, #3b0764);
+  box-shadow: 0 0 30px rgba(192,132,252,0.35);
+  top: 4%;
+  right: 3%;
+  animation: planetBob 10s ease-in-out infinite;
+}
+.planet__ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotateX(70deg);
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  border: 8px solid rgba(192,132,252,0.45);
+  box-shadow: 0 0 14px rgba(192,132,252,0.3);
+}
+
+/* Small planet — bottom left, orangey */
+.p2 {
+  width: 44px;
+  height: 44px;
+  background: radial-gradient(circle at 35% 35%, #fb923c, #c2410c 60%, #7c2d12);
+  box-shadow: 0 0 20px rgba(251,146,60,0.3);
+  bottom: 8%;
+  left: 3%;
+  animation: planetBob 7s ease-in-out infinite 2s;
+}
+
+@keyframes planetBob {
+  0%,100% { transform: translateY(0px);  }
+  50%      { transform: translateY(-12px); }
+}
+
+/* ══════════════════════════════════════════════════════════
+   SCREEN MANAGEMENT
+══════════════════════════════════════════════════════════ */
 .screen {
   display: none;
   position: relative;
-  z-index: 1;
+  z-index: 10;
   min-height: 100dvh;
-  padding: 24px 16px 40px;
+  padding: 24px 16px 48px;
   align-items: center;
   justify-content: center;
   flex-direction: column;
+  gap: 18px;
 }
-.screen.active {
-  display: flex;
-}
+.screen.active { display: flex; }
 
-/* ============================================================
-   SCREEN 1 — Start
-   ============================================================ */
-.start-card {
+/* ══════════════════════════════════════════════════════════
+   GLASS CARD (shared by all screens)
+══════════════════════════════════════════════════════════ */
+.card {
   width: 100%;
-  max-width: 400px;
+  max-width: 420px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-lg);
-  padding: 40px 28px 36px;
-  text-align: center;
-  box-shadow: var(--shadow-gold), 0 32px 64px rgba(0,0,0,0.5);
-  animation: fadeUp 0.55s cubic-bezier(0.22,1,0.36,1) both;
+  padding: 32px 26px;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow:
+    0 0 0 1px rgba(120,160,255,0.08),
+    0 8px 32px rgba(0,0,20,0.6),
+    inset 0 1px 0 rgba(255,255,255,0.07);
 }
 
-/* Animated compass emoji */
-.compass {
-  font-size: 52px;
-  display: block;
-  margin-bottom: 16px;
-  animation: spin 12s linear infinite;
-  transform-origin: center;
+/* ══════════════════════════════════════════════════════════
+   SCREEN 1 — Start Card
+══════════════════════════════════════════════════════════ */
+.start-card {
+  text-align: center;
+  animation: floatIn 0.6s cubic-bezier(0.22,1,0.36,1) both;
 }
-@keyframes spin {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
+
+/* Bouncing rocket emoji at top */
+.title-rocket {
+  font-size: 56px;
+  display: block;
+  margin-bottom: 10px;
+  animation: rocketBounce 2s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px rgba(0,229,255,0.5));
+}
+@keyframes rocketBounce {
+  0%,100% { transform: translateY(0) rotate(-5deg); }
+  50%      { transform: translateY(-10px) rotate(5deg); }
 }
 
 .main-title {
   font-family: var(--font-display);
-  font-size: clamp(46px, 14vw, 64px);
-  line-height: 0.92;
-  letter-spacing: 0.03em;
-  color: var(--gold);
-  text-shadow: 0 0 40px var(--gold-glow);
+  font-size: clamp(46px, 13vw, 68px);
+  line-height: 0.9;
+  letter-spacing: 0.04em;
+  /* Glowing gradient text */
+  background: linear-gradient(135deg, var(--cyan) 0%, var(--purple) 50%, var(--pink) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(0,229,255,0.3));
   margin-bottom: 10px;
 }
 
 .subtitle {
   font-size: 13px;
-  color: var(--text-muted);
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  margin-bottom: 32px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+  margin-bottom: 28px;
+  line-height: 1.5;
 }
 
-/* ── Shared field styles ── */
-.field-group {
-  text-align: left;
-  margin-bottom: 20px;
-}
+/* ── Shared form fields ── */
+.field-group { text-align: left; margin-bottom: 18px; }
 
 .field-label {
   display: block;
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--gold);
+  font-weight: 800;
+  letter-spacing: 0.16em;
+  color: var(--cyan);
   margin-bottom: 8px;
+  text-shadow: 0 0 10px rgba(0,229,255,0.4);
 }
 
 .text-input {
   width: 100%;
-  background: var(--bg);
-  border: 1.5px solid rgba(232,160,32,0.25);
+  background: rgba(0, 10, 40, 0.7);
+  border: 1.5px solid rgba(0,229,255,0.25);
   border-radius: var(--radius-sm);
   padding: 14px 16px;
   font-family: var(--font-ui);
   font-size: 15px;
-  color: var(--text);
+  color: var(--white);
   outline: none;
   transition: border-color 0.2s, box-shadow 0.2s;
   letter-spacing: 0.04em;
 }
-.text-input::placeholder { color: var(--text-muted); }
+.text-input::placeholder { color: var(--muted); }
 .text-input:focus {
-  border-color: var(--gold);
-  box-shadow: 0 0 0 3px var(--gold-glow);
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 3px rgba(0,229,255,0.12), 0 0 16px rgba(0,229,255,0.15);
 }
-.text-input:disabled { opacity: 0.4; cursor: not-allowed; }
+.text-input:disabled { opacity: 0.35; cursor: not-allowed; }
 
-/* ── Primary CTA button ── */
+/* ── Primary button ── */
 .btn-primary {
   width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 10px;
-  background: var(--gold);
-  color: #0d1117;
+  background: linear-gradient(135deg, #0891b2, #7c3aed);
+  color: #fff;
   border: none;
   border-radius: var(--radius-sm);
   padding: 16px 24px;
-  font-family: var(--font-ui);
-  font-size: 16px;
-  font-weight: 700;
+  font-family: var(--font-display);
+  font-size: 22px;
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s, transform 0.12s, box-shadow 0.2s;
-  box-shadow: 0 4px 24px rgba(232,160,32,0.3);
+  transition: transform 0.12s, box-shadow 0.2s, filter 0.2s;
+  box-shadow: 0 4px 24px rgba(124,58,237,0.4), 0 0 0 1px rgba(255,255,255,0.07);
 }
-.btn-primary:hover  { background: var(--gold-light); box-shadow: 0 6px 32px rgba(232,160,32,0.45); }
+.btn-primary:hover  { filter: brightness(1.2); box-shadow: 0 6px 36px rgba(124,58,237,0.55); }
 .btn-primary:active { transform: scale(0.97); }
 
-/* Inline error text */
 .inline-error {
   margin-top: 12px;
   font-size: 13px;
   color: var(--red);
   text-align: center;
+  font-weight: 600;
 }
 .hidden { display: none !important; }
 
-
-/* ============================================================
-   SCREEN 2 — Active Hunt
-   ============================================================ */
-#screen-hunt {
-  gap: 20px;
-}
+/* ══════════════════════════════════════════════════════════
+   SCREEN 2 — Hunt
+══════════════════════════════════════════════════════════ */
+#screen-hunt { gap: 16px; padding-top: 20px; }
 
 /* ── Top bar ── */
 .hunt-topbar {
   width: 100%;
-  max-width: 480px;
+  max-width: 420px;
   display: flex;
   align-items: center;
   justify-content: space-between;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 12px 18px;
+  padding: 14px 20px;
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
 }
 
-.topbar-team {
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-}
+.topbar-team { display: flex; flex-direction: column; gap: 2px; }
 .topbar-label {
-  font-size: 9px;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--text-muted);
+  font-size: 9px; font-weight: 800;
+  letter-spacing: 0.16em; color: var(--cyan);
 }
 .topbar-value {
-  font-size: 15px;
-  font-weight: 600;
-  color: var(--text);
-  max-width: 160px;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  font-size: 15px; font-weight: 700; color: var(--white);
+  max-width: 170px; white-space: nowrap;
+  overflow: hidden; text-overflow: ellipsis;
 }
 
-/* ── Timer ── */
+.timer-wrap { text-align: right; }
+
 .topbar-timer {
   font-family: 'Courier New', monospace;
-  font-size: 28px;
-  font-weight: 700;
-  color: var(--teal);
-  letter-spacing: 0.05em;
-  text-shadow: 0 0 18px rgba(45,212,191,0.4);
-  /* Subtle pulse animation so the timer feels alive */
+  font-size: 32px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  /* Rainbow timer colour cycle */
+  background: linear-gradient(90deg, var(--cyan), var(--purple), var(--pink));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(0,229,255,0.4));
   animation: timerPulse 1s ease-in-out infinite;
 }
 @keyframes timerPulse {
   0%,100% { opacity: 1; }
-  50%      { opacity: 0.75; }
+  50%      { opacity: 0.7; }
+}
+.timer-label {
+  font-size: 8px; font-weight: 800;
+  letter-spacing: 0.2em; color: var(--muted);
+  margin-top: 2px;
 }
 
 /* ── Clue card ── */
 .clue-card {
-  width: 100%;
-  max-width: 480px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-left: 4px solid var(--gold);
-  border-radius: var(--radius-md);
-  padding: 24px 22px;
+  border-left: 4px solid var(--cyan);
   position: relative;
   overflow: hidden;
+  animation: floatIn 0.5s cubic-bezier(0.22,1,0.36,1) both;
 }
 
-/* Crosshatch texture overlay */
-.clue-card::before {
+/* Scanline overlay inside clue card for sci-fi feel */
+.clue-card::after {
   content: '';
   position: absolute;
   inset: 0;
-  background-image:
-    repeating-linear-gradient(45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px),
-    repeating-linear-gradient(-45deg, rgba(255,255,255,0.015) 0px, rgba(255,255,255,0.015) 1px, transparent 1px, transparent 8px);
+  background: repeating-linear-gradient(
+    to bottom,
+    transparent 0px,
+    transparent 3px,
+    rgba(0,229,255,0.025) 3px,
+    rgba(0,229,255,0.025) 4px
+  );
   pointer-events: none;
 }
 
 .clue-card__tag {
   font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  color: var(--gold);
+  font-weight: 800;
+  letter-spacing: 0.18em;
+  color: var(--cyan);
+  text-shadow: 0 0 10px rgba(0,229,255,0.5);
   margin-bottom: 14px;
 }
 
 .clue-card__text {
   font-size: 16px;
-  line-height: 1.7;
-  color: var(--text);
+  line-height: 1.75;
+  color: var(--white);
   font-weight: 400;
+  position: relative;
+  z-index: 1;
 }
 
 /* ── Passcode section ── */
-.passcode-section {
-  width: 100%;
-  max-width: 480px;
-}
+.passcode-section { width: 100%; max-width: 420px; }
 
 .passcode-row {
   display: flex;
@@ -286,74 +585,70 @@ html, body {
 
 .passcode-input {
   flex: 1;
-  letter-spacing: 0.12em;
-  font-weight: 600;
+  font-weight: 700;
   font-size: 16px;
+  letter-spacing: 0.12em;
 }
 
 .btn-submit {
-  background: var(--gold);
-  color: #0d1117;
+  background: linear-gradient(135deg, #0891b2, #6d28d9);
+  color: #fff;
   border: none;
   border-radius: var(--radius-sm);
-  padding: 14px 20px;
-  font-family: var(--font-ui);
-  font-size: 14px;
-  font-weight: 700;
+  padding: 14px 18px;
+  font-family: var(--font-display);
+  font-size: 18px;
   letter-spacing: 0.06em;
   cursor: pointer;
-  transition: background 0.2s, transform 0.12s;
   white-space: nowrap;
-  box-shadow: 0 4px 16px rgba(232,160,32,0.25);
+  transition: filter 0.2s, transform 0.12s;
+  box-shadow: 0 4px 16px rgba(109,40,217,0.4);
 }
-.btn-submit:hover  { background: var(--gold-light); }
+.btn-submit:hover  { filter: brightness(1.25); }
 .btn-submit:active { transform: scale(0.96); }
-.btn-submit:disabled { opacity: 0.35; cursor: not-allowed; }
+.btn-submit:disabled { opacity: 0.3; cursor: not-allowed; filter: none; }
 
-
-/* ============================================================
+/* ══════════════════════════════════════════════════════════
    SCREEN 3 — Result
-   ============================================================ */
+══════════════════════════════════════════════════════════ */
 .result-card {
-  width: 100%;
-  max-width: 420px;
-  background: var(--surface);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-lg);
-  padding: 36px 28px 32px;
   text-align: center;
-  box-shadow: var(--shadow-gold), 0 32px 64px rgba(0,0,0,0.5);
-  animation: fadeUp 0.5s cubic-bezier(0.22,1,0.36,1) both;
+  animation: floatIn 0.55s cubic-bezier(0.22,1,0.36,1) both;
+  max-width: 420px;
 }
 
 .result-icon {
-  font-size: 56px;
+  font-size: 64px;
   display: block;
-  margin-bottom: 14px;
-  animation: bounce 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+  margin-bottom: 12px;
+  animation: trophyPop 0.6s cubic-bezier(0.22,1,0.36,1) 0.1s both;
+  filter: drop-shadow(0 0 20px rgba(253,224,71,0.5));
 }
-@keyframes bounce {
-  0%   { transform: scale(0) rotate(-20deg); opacity: 0; }
-  70%  { transform: scale(1.15) rotate(5deg); opacity: 1; }
-  100% { transform: scale(1) rotate(0deg); }
+@keyframes trophyPop {
+  0%   { transform: scale(0) rotate(-30deg); opacity: 0; }
+  70%  { transform: scale(1.2) rotate(8deg);  opacity: 1; }
+  100% { transform: scale(1)   rotate(0deg); }
 }
 
 .result-title {
   font-family: var(--font-display);
-  font-size: 36px;
-  color: var(--gold);
+  font-size: 38px;
   letter-spacing: 0.04em;
+  background: linear-gradient(135deg, var(--yellow), var(--cyan));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
   margin-bottom: 4px;
 }
 
 .result-team {
   font-size: 14px;
-  color: var(--text-muted);
-  margin-bottom: 28px;
+  color: var(--muted);
   letter-spacing: 0.06em;
+  margin-bottom: 24px;
+  font-weight: 600;
 }
 
-/* Score breakdown grid */
 .result-grid {
   border: 1px solid var(--border);
   border-radius: var(--radius-sm);
@@ -372,58 +667,57 @@ html, body {
 }
 .result-row:last-child { border-bottom: none; }
 
-.result-label { color: var(--text-muted); font-weight: 400; }
-.result-val   { font-weight: 600; color: var(--text); }
+.result-label { color: var(--muted); font-weight: 600; }
+.result-val   { font-weight: 700; color: var(--white); }
 
-/* Penalty row highlight */
 .result-row.penalty .result-val { color: var(--red); }
 
-/* Final score row highlight */
 .result-row.final {
-  background: var(--gold-glow);
+  background: rgba(0,229,255,0.07);
+  border-top: 1px solid rgba(0,229,255,0.2);
 }
-.result-row.final .result-label { color: var(--gold-light); font-weight: 700; }
-.result-row.final .result-val   { color: var(--gold-light); font-size: 20px; font-weight: 700; }
+.result-row.final .result-label { color: var(--cyan); font-weight: 700; }
+.result-row.final .result-val   { color: var(--cyan); font-size: 20px; font-weight: 800; text-shadow: 0 0 12px rgba(0,229,255,0.4); }
 
 /* Submission status pill */
 .submit-status {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  background: var(--surface-2);
+  background: rgba(0,10,40,0.6);
   border: 1px solid var(--border);
   border-radius: 99px;
   padding: 8px 16px;
   font-size: 13px;
-  color: var(--text-muted);
+  color: var(--muted);
+  font-weight: 600;
 }
 
-/* Animated dot */
 .status-dot {
-  width: 8px;
-  height: 8px;
+  width: 8px; height: 8px;
   border-radius: 50%;
-  background: var(--teal);
+  background: var(--cyan);
   animation: dotPulse 1.2s ease-in-out infinite;
+  flex-shrink: 0;
 }
 @keyframes dotPulse {
   0%,100% { opacity: 1; transform: scale(1); }
-  50%      { opacity: 0.4; transform: scale(0.7); }
+  50%      { opacity: 0.3; transform: scale(0.6); }
 }
-/* Stop pulsing once done */
-.status-dot.done    { background: var(--teal); animation: none; }
-.status-dot.failed  { background: var(--red);  animation: none; }
+.status-dot.done   { background: var(--green); animation: none; }
+.status-dot.failed { background: var(--red);   animation: none; }
 
-
-/* ── Shared fade-up entrance ── */
-@keyframes fadeUp {
-  from { opacity: 0; transform: translateY(36px); }
-  to   { opacity: 1; transform: translateY(0); }
+/* ── Shared entrance animation ── */
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(40px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0)    scale(1);    }
 }
 
 /* ── Responsive ── */
-@media (max-width: 360px) {
-  .start-card, .result-card { padding: 28px 18px 28px; }
+@media (max-width: 380px) {
+  .card { padding: 24px 18px; }
   .passcode-row { flex-direction: column; }
-  .btn-submit   { width: 100%; padding: 14px; }
+  .btn-submit { width: 100%; padding: 14px; }
+  .ufo-1 { left: -60px; }
+  .ufo-2 { right: -40px; }
 }
